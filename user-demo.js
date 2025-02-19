@@ -14,7 +14,7 @@ app.post("/join", (req, res) => {
     });
   } else {
     db.set(id++, req.body);
-    var userName = db.get(id - 1).name;
+    const userName = db.get(id - 1).name;
 
     res.status(201).json({
       message: `${userName} 님, 환영합니다.`,
@@ -23,32 +23,43 @@ app.post("/join", (req, res) => {
 });
 
 //로그인
-app.post("/login", (req, res) => {
-  if (req.body.id && req.body.pwd) {
-    res.json({
-      message: `${userName} 님, 환영합니다.`,
-    });
-  } else {
-    res.status(404).json({
-      message: "없는 아이디 또는 비밀번호입니다. 회원가입이 필요합니다.",
-    });
-  }
-});
+app.post("/login", (req, res) => {});
 
-//회원 개별 조회
-app.get("/users/:id", (req, res) => {
-  if (req.body.id && req.body.pwd && req.body.userName) {
-    res.json({
-      message: `${userName} 님, 환영합니다.`,
-    });
-  }
-});
+//route로 묶어주기
+app
+  .route("/users/:id")
+  .get((req, res) => {
+    //회원 개별 조회
+    let { id } = req.params;
+    id = parseInt(id);
+    const user = db.get(id);
 
-//회원 개별 탈퇴
-app.post("/users/:id", (req, res) => {
-  if (req.body.id) {
-    res.json({
-      message: `${userName} 님, 또 뵙겠습니다.`,
-    });
-  }
-});
+    if (user == undefined) {
+      res.status(404).json({
+        message: "회원 정보가 없습니다.",
+      });
+    } else {
+      res.status(200).json({
+        userId: user.userId,
+        name: user.name,
+      });
+    }
+  })
+  .delete((req, res) => {
+    //회원 탈퇴
+    let { id } = req.params;
+    id = parseInt(id);
+    const user = db.get(id);
+
+    if (user == undefined) {
+      res.status(404).json({
+        message: "회원 정보가 없습니다.",
+      });
+    } else {
+      db.delete(id);
+
+      res.status(200).json({
+        message: `${user.name} 님, 또 뵙겠습니다.`,
+      });
+    }
+  });
