@@ -1,5 +1,4 @@
 const express = require("express");
-const { debugPort } = require("node:process");
 const app = express();
 app.listen(3000);
 app.use(express.json());
