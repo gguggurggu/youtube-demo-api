@@ -23,7 +23,32 @@ app.post("/join", (req, res) => {
 });
 
 //로그인
-app.post("/login", (req, res) => {});
+app.post("/login", (req, res) => {
+  const { userId, password } = req.body;
+  var loginUser = "";
+
+  db.forEach((user, id) => {
+    if (user.userId === userId) {
+      loginUser = user;
+    }
+  });
+
+  if (loginUser) {
+    if (loginUser.password === password) {
+      res.json({
+        message: `${loginUser.name} 님, 환영합니다.`,
+      });
+    } else {
+      res.status(404).json({
+        message: "비밀번호를 다시 입력해 주세요.",
+      });
+    }
+  } else {
+    res.status(404).json({
+      message: "아이디를 다시 입력해 주세요.",
+    });
+  }
+});
 
 //route로 묶어주기
 app
